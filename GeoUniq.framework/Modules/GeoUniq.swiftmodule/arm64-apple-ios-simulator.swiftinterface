@@ -1,0 +1,1346 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.3 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
+// swift-module-flags: -target arm64-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name GeoUniq
+import AdSupport
+import CoreData
+import CoreLocation
+import CoreMotion
+import Dispatch
+import Foundation
+@_exported import GeoUniq
+import MessageUI
+import MobileCoreServices
+import Swift
+import SystemConfiguration
+import UIKit
+public enum AFError : Swift.Error {
+  public enum ParameterEncodingFailureReason {
+    case missingURL
+    case jsonEncodingFailed(error: Swift.Error)
+    case propertyListEncodingFailed(error: Swift.Error)
+  }
+  public enum MultipartEncodingFailureReason {
+    case bodyPartURLInvalid(url: Foundation.URL)
+    case bodyPartFilenameInvalid(in: Foundation.URL)
+    case bodyPartFileNotReachable(at: Foundation.URL)
+    case bodyPartFileNotReachableWithError(atURL: Foundation.URL, error: Swift.Error)
+    case bodyPartFileIsDirectory(at: Foundation.URL)
+    case bodyPartFileSizeNotAvailable(at: Foundation.URL)
+    case bodyPartFileSizeQueryFailedWithError(forURL: Foundation.URL, error: Swift.Error)
+    case bodyPartInputStreamCreationFailed(for: Foundation.URL)
+    case outputStreamCreationFailed(for: Foundation.URL)
+    case outputStreamFileAlreadyExists(at: Foundation.URL)
+    case outputStreamURLInvalid(url: Foundation.URL)
+    case outputStreamWriteFailed(error: Swift.Error)
+    case inputStreamReadFailed(error: Swift.Error)
+  }
+  public enum ResponseValidationFailureReason {
+    case dataFileNil
+    case dataFileReadFailed(at: Foundation.URL)
+    case missingContentType(acceptableContentTypes: [Swift.String])
+    case unacceptableContentType(acceptableContentTypes: [Swift.String], responseContentType: Swift.String)
+    case unacceptableStatusCode(code: Swift.Int)
+  }
+  public enum ResponseSerializationFailureReason {
+    case inputDataNil
+    case inputDataNilOrZeroLength
+    case inputFileNil
+    case inputFileReadFailed(at: Foundation.URL)
+    case stringSerializationFailed(encoding: Swift.String.Encoding)
+    case jsonSerializationFailed(error: Swift.Error)
+    case propertyListSerializationFailed(error: Swift.Error)
+  }
+  case parameterEncodingFailed(reason: AFError.ParameterEncodingFailureReason)
+  case multipartEncodingFailed(reason: AFError.MultipartEncodingFailureReason)
+  case responseValidationFailed(reason: AFError.ResponseValidationFailureReason)
+  case responseSerializationFailed(reason: AFError.ResponseSerializationFailureReason)
+}
+extension AFError {
+  public var isParameterEncodingError: Swift.Bool {
+    get
+  }
+  public var isMultipartEncodingError: Swift.Bool {
+    get
+  }
+  public var isResponseValidationError: Swift.Bool {
+    get
+  }
+  public var isResponseSerializationError: Swift.Bool {
+    get
+  }
+}
+extension AFError {
+  public var url: Foundation.URL? {
+    get
+  }
+  public var underlyingError: Swift.Error? {
+    get
+  }
+  public var acceptableContentTypes: [Swift.String]? {
+    get
+  }
+  public var responseContentType: Swift.String? {
+    get
+  }
+  public var responseCode: Swift.Int? {
+    get
+  }
+  public var failedStringEncoding: Swift.String.Encoding? {
+    get
+  }
+}
+extension AFError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public protocol PersistenceProtocolObject : JsonParserProtocol {
+  associatedtype returnType
+  func storeWithKey(key: Swift.String)
+  static func removeWithKey(key: Swift.String) -> Swift.Bool
+  static func readWithKey(key: Swift.String) -> Self.returnType?
+}
+extension PersistenceProtocolObject {
+  public func storeWithKey(key: Swift.String)
+  public static func removeWithKey(key: Swift.String) -> Swift.Bool
+  public static func readWithKey(key: Swift.String) -> Self.returnType?
+}
+@_hasMissingDesignatedInitializers public class GUDetectionManager {
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers open class NetworkReachabilityManager {
+  public enum NetworkReachabilityStatus {
+    case unknown
+    case notReachable
+    case reachable(NetworkReachabilityManager.ConnectionType)
+  }
+  public enum ConnectionType {
+    case ethernetOrWiFi
+    case wwan
+    public static func == (a: NetworkReachabilityManager.ConnectionType, b: NetworkReachabilityManager.ConnectionType) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+    public func hash(into hasher: inout Swift.Hasher)
+  }
+  public typealias Listener = (NetworkReachabilityManager.NetworkReachabilityStatus) -> Swift.Void
+  open var isReachable: Swift.Bool {
+    get
+  }
+  open var isReachableOnWWAN: Swift.Bool {
+    get
+  }
+  open var isReachableOnEthernetOrWiFi: Swift.Bool {
+    get
+  }
+  open var networkReachabilityStatus: NetworkReachabilityManager.NetworkReachabilityStatus {
+    get
+  }
+  open var listenerQueue: Dispatch.DispatchQueue
+  open var listener: NetworkReachabilityManager.Listener?
+  convenience public init?(host: Swift.String)
+  convenience public init?()
+  @objc deinit
+  @discardableResult
+  open func startListening() -> Swift.Bool
+  open func stopListening()
+}
+extension NetworkReachabilityManager.NetworkReachabilityStatus : Swift.Equatable {
+}
+public func == (lhs: NetworkReachabilityManager.NetworkReachabilityStatus, rhs: NetworkReachabilityManager.NetworkReachabilityStatus) -> Swift.Bool
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers open class GeoUniq : ObjectiveC.NSObject {
+  @objc public static let MAX_CUSTOM_ID_LENGTH: Swift.Int
+  @objc public static func sharedInstance() -> GeoUniq
+  @objc public static var FrameworkVersionName: Swift.String {
+    @objc get
+  }
+  @objc public static func sharedInstance(_ callbackDeviceId: @escaping (Swift.String) -> Swift.Void) -> GeoUniq
+  @objc open func getMobileKey() -> Swift.String?
+  @objc open func getDeviceId() -> Swift.String?
+  @objc open func enable()
+  @objc open func disable()
+  @objc open func getStartingTrackingGranularity() -> Swift.Double
+  @objc open func setStartingTrackingGranularity(_ granularity: Swift.Double)
+  @objc open func resetStartingTrackingGranularity()
+  @objc open func getCurrentTrackingGranularity() -> Swift.Double
+  @objc open func setCurrentTrackingGranularity(_ granularity: Swift.Double)
+  @objc open func getPosition(_ accuracy: Swift.Double, callback: GUPositionReceiver)
+  @objc open func enableDebug(_ enable: Swift.Bool)
+  @objc open func isTrackingActive() -> Swift.Bool
+  @objc open func backgroundFetch()
+  @objc open func registerBackgroundFetch()
+  @objc open func registerRemoteNotifications()
+  @objc open func registerDeviceToken(_ deviceToken: Foundation.Data)
+  @objc open func setLabelSession(_ label: Swift.String?) -> Swift.Bool
+  @objc open func getLabelSession() -> Swift.String?
+  @objc open func resetLabel()
+  @available(iOS 11.0, *)
+  @objc open func getMotionActivityPermission() -> CoreMotion.CMAuthorizationStatus
+  open func registerAllActivityChange(_ delegate: GUActivityDelegate.Type)
+  open func registerActivityChange(_ delegate: GUActivityDelegate.Type, motionTypes: [GUMotionType])
+  open func registerActivityChange(_ delegate: GUActivityDelegate.Type, motionType: GUMotionType)
+  open func deregisterAll(_ delegate: GUActivityDelegate.Type)
+  open func deregisterActvityChange(_ delegate: GUActivityDelegate.Type, motionTypes: [GUMotionType])
+  open func deregisterActvityChange(_ delegate: GUActivityDelegate.Type, motionType: GUMotionType)
+  open func getCurrentActivityRegistrations() -> [Swift.String : [GUMotionType]]?
+  @available(*, deprecated, renamed: "getPrivacyConsents")
+  @objc open func getConsentStatus() -> Swift.Bool
+  @available(*, deprecated, renamed: "setPrivacyConsent")
+  @objc open func setConsentStatus(isGranted: Swift.Bool)
+  @available(*, deprecated, renamed: "showPrivacyPolicyAndSet")
+  @objc open func showConsentDialogAndSet(completion: @escaping isGranted)
+  @objc open func showPrivacyPolicyAndSet(completion: @escaping (ConsentsMap) -> ())
+  @objc open func showPrivacyPolicySwitchesAndSet(completion: @escaping (ConsentsMap) -> ())
+  @objc open func setPrivacyConsent(_ consent: ConsentItem, value: Swift.Bool)
+  @objc open func getPrivacyConsent(_ consent: ConsentItem) -> Swift.Bool
+  @objc open func getPrivacyConsentsMap() -> ConsentsMap
+  @objc open func getLastKnownLocation() -> GULocation?
+  @objc open func getLocationHistory(_ from: Foundation.Date, to: Foundation.Date, sort: GUSort, locationsReceiver: GULocationHistoryReceiver)
+  @objc open func registerToGroupsWithName(_ name: Swift.String)
+  @objc open func registerToGroupWithId(_ groupId: Swift.String)
+  @objc open func setCustomEndpoint(endpoint: CustomEndpoint)
+  @objc open func getCustomEndpoint() -> CustomEndpoint?
+  @objc open func removeCustomEndpoint()
+  @objc open func enableCustomEndpoint()
+  @objc open func disableCustomEndpoint()
+  @objc open func isCustomEndpointEnabled() -> Swift.Bool
+  @objc open func isLocationTrackingAvailable() -> Swift.Bool
+  @objc open func setTrackingListener(listener: GUTrackingListener.Type)
+  @objc open func removeTrackingListener(listener: GUTrackingListener.Type) -> Swift.Bool
+  @objc open func getTrackingListeners() -> [GUTrackingListener.Type]?
+  @objc open func removeAllTrackingListeners()
+  @objc open func setCustomId(_ customId: Swift.String) -> Swift.Bool
+  @objc open func getCustomId() -> Swift.String?
+  @objc open func setGUGeofence(area: GUCircularArea, listener: GUGeofenceListener.Type, expirationDate: Foundation.Date? = nil) -> GUGeofence
+  @objc open func removeGUGeofence(id: Swift.String) -> Swift.Bool
+  @objc open func removeAllGUGeofence()
+  @objc open func getGUGeofences() -> [GUGeofence]
+  @objc open func getRemoteGUGeofences() -> [GUGeofence]
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers open class TaskDelegate : ObjectiveC.NSObject {
+  final public let queue: Foundation.OperationQueue
+  @objc deinit
+  @objc override dynamic public init()
+}
+open class ServerTrustPolicyManager {
+  final public let policies: [Swift.String : ServerTrustPolicy]
+  public init(policies: [Swift.String : ServerTrustPolicy])
+  open func serverTrustPolicy(forHost host: Swift.String) -> ServerTrustPolicy?
+  @objc deinit
+}
+public enum ServerTrustPolicy {
+  case performDefaultEvaluation(validateHost: Swift.Bool)
+  case pinCertificates(certificates: [Security.SecCertificate], validateCertificateChain: Swift.Bool, validateHost: Swift.Bool)
+  case pinPublicKeys(publicKeys: [Security.SecKey], validateCertificateChain: Swift.Bool, validateHost: Swift.Bool)
+  case disableEvaluation
+  case customEvaluation((Security.SecTrust, Swift.String) -> Swift.Bool)
+  public static func certificates(in bundle: Foundation.Bundle = Bundle.main) -> [Security.SecCertificate]
+  public static func publicKeys(in bundle: Foundation.Bundle = Bundle.main) -> [Security.SecKey]
+  public func evaluate(_ serverTrust: Security.SecTrust, forHost host: Swift.String) -> Swift.Bool
+}
+public struct Timeline {
+  public let requestStartTime: CoreFoundation.CFAbsoluteTime
+  public let initialResponseTime: CoreFoundation.CFAbsoluteTime
+  public let requestCompletedTime: CoreFoundation.CFAbsoluteTime
+  public let serializationCompletedTime: CoreFoundation.CFAbsoluteTime
+  public let latency: Foundation.TimeInterval
+  public let requestDuration: Foundation.TimeInterval
+  public let serializationDuration: Foundation.TimeInterval
+  public let totalDuration: Foundation.TimeInterval
+  public init(requestStartTime: CoreFoundation.CFAbsoluteTime = 0.0, initialResponseTime: CoreFoundation.CFAbsoluteTime = 0.0, requestCompletedTime: CoreFoundation.CFAbsoluteTime = 0.0, serializationCompletedTime: CoreFoundation.CFAbsoluteTime = 0.0)
+}
+extension Timeline : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+extension Timeline : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+@objc public protocol GUGeofenceListener {
+  @objc init()
+  @objc func didEnterGUGeofence(_ geofence: GUGeofence)
+  @objc func didExitGUGeofence(_ geofence: GUGeofence)
+}
+@objc public enum GUSort : Swift.Int {
+  case timeAsc
+  case timeDesc
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public enum HTTPMethod : Swift.String {
+  case options
+  case get
+  case head
+  case post
+  case put
+  case patch
+  case delete
+  case trace
+  case connect
+  public typealias RawValue = Swift.String
+  public init?(rawValue: Swift.String)
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public typealias Parameters = [Swift.String : Any]
+public protocol ParameterEncoding {
+  func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> Foundation.URLRequest
+}
+public struct URLEncoding : ParameterEncoding {
+  public enum Destination {
+    case methodDependent, queryString, httpBody
+    public static func == (a: URLEncoding.Destination, b: URLEncoding.Destination) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+    public func hash(into hasher: inout Swift.Hasher)
+  }
+  public static var `default`: URLEncoding {
+    get
+  }
+  public static var methodDependent: URLEncoding {
+    get
+  }
+  public static var queryString: URLEncoding {
+    get
+  }
+  public static var httpBody: URLEncoding {
+    get
+  }
+  public let destination: URLEncoding.Destination
+  public init(destination: URLEncoding.Destination = .methodDependent)
+  public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> Foundation.URLRequest
+  public func queryComponents(fromKey key: Swift.String, value: Any) -> [(Swift.String, Swift.String)]
+  public func escape(_ string: Swift.String) -> Swift.String
+}
+public struct JSONEncoding : ParameterEncoding {
+  public static var `default`: JSONEncoding {
+    get
+  }
+  public static var prettyPrinted: JSONEncoding {
+    get
+  }
+  public let options: Foundation.JSONSerialization.WritingOptions
+  public init(options: Foundation.JSONSerialization.WritingOptions = [])
+  public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> Foundation.URLRequest
+}
+public struct PropertyListEncoding : ParameterEncoding {
+  public static var `default`: PropertyListEncoding {
+    get
+  }
+  public static var xml: PropertyListEncoding {
+    get
+  }
+  public static var binary: PropertyListEncoding {
+    get
+  }
+  public let format: Foundation.PropertyListSerialization.PropertyListFormat
+  public let options: Foundation.PropertyListSerialization.WriteOptions
+  public init(format: Foundation.PropertyListSerialization.PropertyListFormat = .xml, options: Foundation.PropertyListSerialization.WriteOptions = 0)
+  public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> Foundation.URLRequest
+}
+public protocol DataResponseSerializerProtocol {
+  associatedtype SerializedObject
+  var serializeResponse: (Foundation.URLRequest?, Foundation.HTTPURLResponse?, Foundation.Data?, Swift.Error?) -> Result<Self.SerializedObject> { get }
+}
+public struct DataResponseSerializer<Value> : DataResponseSerializerProtocol {
+  public typealias SerializedObject = Value
+  public var serializeResponse: (Foundation.URLRequest?, Foundation.HTTPURLResponse?, Foundation.Data?, Swift.Error?) -> Result<Value>
+  public init(serializeResponse: @escaping (Foundation.URLRequest?, Foundation.HTTPURLResponse?, Foundation.Data?, Swift.Error?) -> Result<Value>)
+}
+public protocol DownloadResponseSerializerProtocol {
+  associatedtype SerializedObject
+  var serializeResponse: (Foundation.URLRequest?, Foundation.HTTPURLResponse?, Foundation.URL?, Swift.Error?) -> Result<Self.SerializedObject> { get }
+}
+public struct DownloadResponseSerializer<Value> : DownloadResponseSerializerProtocol {
+  public typealias SerializedObject = Value
+  public var serializeResponse: (Foundation.URLRequest?, Foundation.HTTPURLResponse?, Foundation.URL?, Swift.Error?) -> Result<Value>
+  public init(serializeResponse: @escaping (Foundation.URLRequest?, Foundation.HTTPURLResponse?, Foundation.URL?, Swift.Error?) -> Result<Value>)
+}
+extension DataRequest {
+  @discardableResult
+  public func response(queue: Dispatch.DispatchQueue? = nil, completionHandler: @escaping (DefaultDataResponse) -> Swift.Void) -> Self
+  @discardableResult
+  public func response<T>(queue: Dispatch.DispatchQueue? = nil, responseSerializer: T, completionHandler: @escaping (DataResponse<T.SerializedObject>) -> Swift.Void) -> Self where T : DataResponseSerializerProtocol
+}
+extension DownloadRequest {
+  @discardableResult
+  public func response(queue: Dispatch.DispatchQueue? = nil, completionHandler: @escaping (DefaultDownloadResponse) -> Swift.Void) -> Self
+  @discardableResult
+  public func response<T>(queue: Dispatch.DispatchQueue? = nil, responseSerializer: T, completionHandler: @escaping (DownloadResponse<T.SerializedObject>) -> Swift.Void) -> Self where T : DownloadResponseSerializerProtocol
+}
+extension Request {
+  public static func serializeResponseData(response: Foundation.HTTPURLResponse?, data: Foundation.Data?, error: Swift.Error?) -> Result<Foundation.Data>
+}
+extension DataRequest {
+  public static func dataResponseSerializer() -> DataResponseSerializer<Foundation.Data>
+  @discardableResult
+  public func responseData(queue: Dispatch.DispatchQueue? = nil, completionHandler: @escaping (DataResponse<Foundation.Data>) -> Swift.Void) -> Self
+}
+extension DownloadRequest {
+  public static func dataResponseSerializer() -> DownloadResponseSerializer<Foundation.Data>
+  @discardableResult
+  public func responseData(queue: Dispatch.DispatchQueue? = nil, completionHandler: @escaping (DownloadResponse<Foundation.Data>) -> Swift.Void) -> Self
+}
+extension Request {
+  public static func serializeResponseString(encoding: Swift.String.Encoding?, response: Foundation.HTTPURLResponse?, data: Foundation.Data?, error: Swift.Error?) -> Result<Swift.String>
+}
+extension DataRequest {
+  public static func stringResponseSerializer(encoding: Swift.String.Encoding? = nil) -> DataResponseSerializer<Swift.String>
+  @discardableResult
+  public func responseString(queue: Dispatch.DispatchQueue? = nil, encoding: Swift.String.Encoding? = nil, completionHandler: @escaping (DataResponse<Swift.String>) -> Swift.Void) -> Self
+}
+extension DownloadRequest {
+  public static func stringResponseSerializer(encoding: Swift.String.Encoding? = nil) -> DownloadResponseSerializer<Swift.String>
+  @discardableResult
+  public func responseString(queue: Dispatch.DispatchQueue? = nil, encoding: Swift.String.Encoding? = nil, completionHandler: @escaping (DownloadResponse<Swift.String>) -> Swift.Void) -> Self
+}
+extension Request {
+  public static func serializeResponseJSON(options: Foundation.JSONSerialization.ReadingOptions, response: Foundation.HTTPURLResponse?, data: Foundation.Data?, error: Swift.Error?) -> Result<Any>
+}
+extension DataRequest {
+  public static func jsonResponseSerializer(options: Foundation.JSONSerialization.ReadingOptions = .allowFragments) -> DataResponseSerializer<Any>
+  @discardableResult
+  public func responseJSON(queue: Dispatch.DispatchQueue? = nil, options: Foundation.JSONSerialization.ReadingOptions = .allowFragments, completionHandler: @escaping (DataResponse<Any>) -> Swift.Void) -> Self
+}
+extension DownloadRequest {
+  public static func jsonResponseSerializer(options: Foundation.JSONSerialization.ReadingOptions = .allowFragments) -> DownloadResponseSerializer<Any>
+  @discardableResult
+  public func responseJSON(queue: Dispatch.DispatchQueue? = nil, options: Foundation.JSONSerialization.ReadingOptions = .allowFragments, completionHandler: @escaping (DownloadResponse<Any>) -> Swift.Void) -> Self
+}
+extension Request {
+  public static func serializeResponsePropertyList(options: Foundation.PropertyListSerialization.ReadOptions, response: Foundation.HTTPURLResponse?, data: Foundation.Data?, error: Swift.Error?) -> Result<Any>
+}
+extension DataRequest {
+  public static func propertyListResponseSerializer(options: Foundation.PropertyListSerialization.ReadOptions = []) -> DataResponseSerializer<Any>
+  @discardableResult
+  public func responsePropertyList(queue: Dispatch.DispatchQueue? = nil, options: Foundation.PropertyListSerialization.ReadOptions = [], completionHandler: @escaping (DataResponse<Any>) -> Swift.Void) -> Self
+}
+extension DownloadRequest {
+  public static func propertyListResponseSerializer(options: Foundation.PropertyListSerialization.ReadOptions = []) -> DownloadResponseSerializer<Any>
+  @discardableResult
+  public func responsePropertyList(queue: Dispatch.DispatchQueue? = nil, options: Foundation.PropertyListSerialization.ReadOptions = [], completionHandler: @escaping (DownloadResponse<Any>) -> Swift.Void) -> Self
+}
+extension Double : PersistenceProtocol {
+  public typealias returnType = Swift.Double
+  public func storeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String)
+  public static func removeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool
+  public static func readWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Double?
+}
+extension Int : PersistenceProtocol {
+  public typealias returnType = Swift.Int
+  public func storeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String)
+  public static func removeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool
+  public static func readWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Int?
+}
+extension String : PersistenceProtocol {
+  public typealias returnType = Swift.String
+  public func storeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String)
+  public static func removeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool
+  public static func readWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.String?
+}
+extension NSDictionary : PersistenceProtocol {
+  public typealias returnType = Foundation.NSDictionary
+  public func storeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String)
+  public static func removeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool
+  public static func readWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Foundation.NSDictionary?
+}
+extension Bool : PersistenceProtocol {
+  public typealias returnType = Swift.Bool
+  public func storeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String)
+  public static func removeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool
+  public static func readWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool?
+}
+extension Date : PersistenceProtocol {
+  public typealias returnType = Foundation.Date
+  public func storeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String)
+  public static func removeWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Swift.Bool
+  public static func readWithKey(persistenceManager: PersistenceManagerAPI = PersistenceManager.shared, key: Swift.String) -> Foundation.Date?
+}
+extension CLLocation : PersistenceProtocolObject {
+  public typealias returnType = CoreLocation.CLLocation
+  public static func decodeJsonObject(json: JSON) -> CoreLocation.CLLocation?
+  public func encodeJsonObject() -> JSON?
+  public typealias DecodableType = CoreLocation.CLLocation
+}
+extension NSError : PersistenceProtocolObject {
+  public typealias returnType = Foundation.NSError
+  public static func decodeJsonObject(json: JSON) -> Foundation.NSError?
+  public func encodeJsonObject() -> JSON?
+  public typealias DecodableType = Foundation.NSError
+}
+public protocol PersistenceManagerAPI {
+  func containsDictionaryKey(key: Swift.String) -> Swift.Bool
+  func containsDoubleKey(key: Swift.String) -> Swift.Bool
+  func containsIntKey(key: Swift.String) -> Swift.Bool
+  func containsStringKey(key: Swift.String) -> Swift.Bool
+  func containsBoolKey(key: Swift.String) -> Swift.Bool
+  func containsListStringKey(key: Swift.String) -> Swift.Bool
+  func containsDateKey(key: Swift.String) -> Swift.Bool
+  func containsData(key: Swift.String) -> Swift.Bool
+  func containsRegisteredActivityKey() -> Swift.Bool
+  func storeDictionary(byKey: Swift.String, value: Foundation.NSDictionary)
+  func storeDouble(byKey: Swift.String, value: Swift.Double)
+  func storeInt(byKey: Swift.String, value: Swift.Int)
+  func storeString(byKey: Swift.String, value: Swift.String)
+  func storeBool(byKey: Swift.String, value: Swift.Bool)
+  func storeListString(byKey: Swift.String, value: [Swift.String])
+  func storeDate(byKey: Swift.String, value: Foundation.Date)
+  func storeData(byKey: Swift.String, value: Foundation.Data)
+  func storeRegisteredActivity(value: [Swift.String : [Swift.String]])
+  func removeDictionary(byKey: Swift.String)
+  func removeDouble(byKey: Swift.String)
+  func removeInt(byKey: Swift.String)
+  func removeString(byKey: Swift.String)
+  func removeBool(byKey: Swift.String)
+  func removeListString(byKey: Swift.String)
+  func removeDate(byKey: Swift.String)
+  func removeData(byKey: Swift.String)
+  func removeRegisterdActivity()
+  func readDictionary(byKey: Swift.String) -> Foundation.NSDictionary?
+  func readDouble(byKey: Swift.String) -> Swift.Double?
+  func readInt(byKey: Swift.String) -> Swift.Int?
+  func readString(byKey: Swift.String) -> Swift.String?
+  func readBool(byKey: Swift.String) -> Swift.Bool?
+  func readListString(byKey: Swift.String) -> [Swift.String]?
+  func readDate(byKey: Swift.String) -> Foundation.Date?
+  func readRegisteredActivity() -> [Swift.String : [Swift.String]]?
+  func readData(byKey: Swift.String) -> Foundation.Data?
+}
+@_hasMissingDesignatedInitializers public class PersistenceManager : PersistenceManagerAPI {
+  public static var shared: PersistenceManager {
+    get
+  }
+  @objc deinit
+}
+extension PersistenceManager {
+  public func containsDictionaryKey(key: Swift.String) -> Swift.Bool
+  public func containsDoubleKey(key: Swift.String) -> Swift.Bool
+  public func containsIntKey(key: Swift.String) -> Swift.Bool
+  public func containsStringKey(key: Swift.String) -> Swift.Bool
+  public func containsBoolKey(key: Swift.String) -> Swift.Bool
+  public func containsListStringKey(key: Swift.String) -> Swift.Bool
+  public func containsDateKey(key: Swift.String) -> Swift.Bool
+  public func containsData(key: Swift.String) -> Swift.Bool
+  public func containsRegisteredActivityKey() -> Swift.Bool
+}
+extension PersistenceManager {
+  public func readDictionary(byKey: Swift.String) -> Foundation.NSDictionary?
+  public func readDouble(byKey: Swift.String) -> Swift.Double?
+  public func readInt(byKey: Swift.String) -> Swift.Int?
+  public func readString(byKey: Swift.String) -> Swift.String?
+  public func readBool(byKey: Swift.String) -> Swift.Bool?
+  public func readListString(byKey: Swift.String) -> [Swift.String]?
+  public func readRegisteredActivity() -> [Swift.String : [Swift.String]]?
+  public func readData(byKey: Swift.String) -> Foundation.Data?
+  public func readDate(byKey: Swift.String) -> Foundation.Date?
+}
+extension PersistenceManager {
+  public func storeDictionary(byKey: Swift.String, value: Foundation.NSDictionary)
+  public func storeDouble(byKey: Swift.String, value: Swift.Double)
+  public func storeInt(byKey: Swift.String, value: Swift.Int)
+  public func storeString(byKey: Swift.String, value: Swift.String)
+  public func storeBool(byKey: Swift.String, value: Swift.Bool)
+  public func storeListString(byKey: Swift.String, value: [Swift.String])
+  public func storeDate(byKey: Swift.String, value: Foundation.Date)
+  public func storeData(byKey: Swift.String, value: Foundation.Data)
+  public func storeRegisteredActivity(value: [Swift.String : [Swift.String]])
+}
+extension PersistenceManager {
+  public func removeDictionary(byKey: Swift.String)
+  public func removeDouble(byKey: Swift.String)
+  public func removeInt(byKey: Swift.String)
+  public func removeString(byKey: Swift.String)
+  public func removeBool(byKey: Swift.String)
+  public func removeListString(byKey: Swift.String)
+  public func removeDate(byKey: Swift.String)
+  public func removeData(byKey: Swift.String)
+  public func removeRegisterdActivity()
+}
+@_hasMissingDesignatedInitializers @objc open class GUGeofence : ObjectiveC.NSObject {
+  @objc public enum Status : Swift.Int {
+    case UNKNOWN
+    case INSIDE
+    case OUTSIDE
+    public typealias RawValue = Swift.Int
+    public init?(rawValue: Swift.Int)
+    public var rawValue: Swift.Int {
+      get
+    }
+  }
+  @objc open var id: Swift.String {
+    get
+  }
+  @objc open var area: GUCircularArea {
+    get
+  }
+  @objc open var callBackClass: Swift.String {
+    get
+  }
+  @objc open var status: GUGeofence.Status {
+    get
+  }
+  @objc open var expirationDate: Foundation.Date? {
+    get
+  }
+  @objc open var lastStatusChange: Foundation.Date? {
+    get
+  }
+  @objc override dynamic open var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public init()
+}
+public enum Result<Value> {
+  case success(Value)
+  case failure(Swift.Error)
+  public var isSuccess: Swift.Bool {
+    get
+  }
+  public var isFailure: Swift.Bool {
+    get
+  }
+  public var value: Value? {
+    get
+  }
+  public var error: Swift.Error? {
+    get
+  }
+}
+extension Result : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+extension Result : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc open class GUMotionActivity : ObjectiveC.NSObject {
+  @objc open var type: GUMotionType {
+    get
+  }
+  @objc open var startTime: Foundation.Date {
+    get
+  }
+  @objc open var endTime: Foundation.Date? {
+    get
+  }
+  @objc override dynamic open var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public init()
+}
+@objc public protocol GUActivityDelegate {
+  @objc init()
+  @objc func onActivityChanged(started: GUMotionActivity, finished: GUMotionActivity)
+}
+@objc open class GULocation : ObjectiveC.NSObject {
+  @objc open var latitude: Swift.Double {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var longitude: Swift.Double {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var time: Foundation.Date {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var confirmedAt: Foundation.Date {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var motionActivity: Swift.String {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var visitDuration: Swift.Double {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var accuracy: Foundation.NSNumber? {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc open var nestedDetections: [GULocation] {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc public init(latitude: Swift.Double, longitude: Swift.Double, time: Foundation.Date, motionActivity: Swift.String, confirmedAt: Foundation.Date, accuracy: Foundation.NSNumber?, nestedDetections: [GULocation] = [GULocation]())
+  @objc open func getGULocation() -> [Swift.String : Swift.AnyObject]
+  @objc override dynamic open var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public init()
+}
+public struct DefaultDataResponse {
+  public let request: Foundation.URLRequest?
+  public let response: Foundation.HTTPURLResponse?
+  public let data: Foundation.Data?
+  public let error: Swift.Error?
+}
+public struct DataResponse<Value> {
+  public let request: Foundation.URLRequest?
+  public let response: Foundation.HTTPURLResponse?
+  public let data: Foundation.Data?
+  public let result: Result<Value>
+  public let timeline: Timeline
+  public init(request: Foundation.URLRequest?, response: Foundation.HTTPURLResponse?, data: Foundation.Data?, result: Result<Value>, timeline: Timeline = Timeline())
+}
+extension DataResponse : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+public struct DefaultDownloadResponse {
+  public let request: Foundation.URLRequest?
+  public let response: Foundation.HTTPURLResponse?
+  public let temporaryURL: Foundation.URL?
+  public let destinationURL: Foundation.URL?
+  public let resumeData: Foundation.Data?
+  public let error: Swift.Error?
+}
+public struct DownloadResponse<Value> {
+  public let request: Foundation.URLRequest?
+  public let response: Foundation.HTTPURLResponse?
+  public let temporaryURL: Foundation.URL?
+  public let destinationURL: Foundation.URL?
+  public let resumeData: Foundation.Data?
+  public let result: Result<Value>
+  public let timeline: Timeline
+  public init(request: Foundation.URLRequest?, response: Foundation.HTTPURLResponse?, temporaryURL: Foundation.URL?, destinationURL: Foundation.URL?, resumeData: Foundation.Data?, result: Result<Value>, timeline: Timeline = Timeline())
+}
+extension DownloadResponse : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+@objc public protocol GULocationHistoryReceiver {
+  @objc func onSuccess(_ locations: [GULocation])
+  @objc func onError()
+}
+@objc public protocol GUTrackingListener {
+  @objc init()
+  @objc func onNewLocationUpdate(_ location: GULocation)
+}
+extension NSNotification.Name {
+  public struct Task {
+    public static let DidResume: Foundation.Notification.Name
+    public static let DidSuspend: Foundation.Notification.Name
+    public static let DidCancel: Foundation.Notification.Name
+    public static let DidComplete: Foundation.Notification.Name
+  }
+}
+extension Notification {
+  public struct Key {
+    public static let Task: Swift.String
+  }
+}
+@objc public protocol GUOfflineStreaming {
+  @objc init()
+  @objc func newLocationReceived(_ location: CoreLocation.CLLocation)
+  @objc func onError(_ error: Foundation.NSError)
+}
+@objc public enum ConsentItem : Swift.Int {
+  case customization
+  case analisys
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class ConsentsMap : ObjectiveC.NSObject {
+  @objc public func containsValue(value: Swift.Bool) -> Swift.Bool
+  @objc public func get(key: ConsentItem) -> Swift.Bool
+  @objc override dynamic public init()
+  @objc deinit
+}
+public typealias consentsClosure = (ConsentsMap) -> ()
+extension ConsentItem : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+@objc public class PersistenceBool : ObjectiveC.NSObject {
+  public var value: Swift.Bool {
+    get
+    set(newValue)
+  }
+  public init(key: Swift.String, defaultValue: Swift.Bool = false)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc public class PersistenceDouble : ObjectiveC.NSObject {
+  public init(key: Swift.String, defaultValue: Swift.Double)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc public class PersistenceInt : ObjectiveC.NSObject {
+  public init(key: Swift.String, defaultValue: Swift.Int)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceIncremetalInt : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc public class PersistenceString : ObjectiveC.NSObject {
+  public init(key: Swift.String, defaultValue: Swift.String)
+  @objc deinit
+  @objc override dynamic public init()
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceCLLocation : ObjectiveC.NSObject {
+  @objc deinit
+  @objc override dynamic public init()
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceDate : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceOptionalCLLocation : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceOptionalPositionModel : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceRegionConfiguration : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class PersistenceGUDetection : ObjectiveC.NSObject {
+  @objc deinit
+  @objc override dynamic public init()
+}
+public struct Log {
+  public static func logLocationUploaderEngine(_ log: Swift.String)
+  public static func logLocationUploaderEngineStateQueue(_ log: Swift.String)
+  public static func logNewVisitEngine(_ log: Swift.String)
+  public static func logPositionTrip(_ log: Swift.String)
+  public static func logTestFunctionaly(_ log: Swift.String)
+}
+@objc public enum GUError : Swift.Int {
+  case deniedLocalizationPermission
+  case notDeterminedLocalizationPermission
+  case generalError
+  case backgroundLocationUpdates
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public protocol RequestAdapter {
+  func adapt(_ urlRequest: Foundation.URLRequest) -> Foundation.URLRequest
+}
+public typealias RequestRetryCompletion = (Swift.Bool, Foundation.TimeInterval) -> Swift.Void
+public protocol RequestRetrier {
+  func should(_ manager: SessionManager, retry request: Request, with error: Swift.Error, completion: (Swift.Bool, Foundation.TimeInterval) -> Swift.Void)
+}
+@_hasMissingDesignatedInitializers open class Request {
+  public typealias ProgressHandler = (Foundation.Progress) -> Swift.Void
+  public typealias DownloadProgressHandler = (Swift.Int64, Swift.Int64, Swift.Int64) -> Swift.Void
+  public typealias UploadProgressHandler = (Swift.Int64, Swift.Int64, Swift.Int64) -> Swift.Void
+  open var delegate: TaskDelegate {
+    get
+  }
+  open var task: Foundation.URLSessionTask {
+    get
+  }
+  final public let session: Foundation.URLSession
+  open var request: Foundation.URLRequest? {
+    get
+  }
+  open var response: Foundation.HTTPURLResponse? {
+    get
+  }
+  @discardableResult
+  open func authenticate(user: Swift.String, password: Swift.String, persistence: Foundation.URLCredential.Persistence = .forSession) -> Self
+  @discardableResult
+  open func authenticate(usingCredential credential: Foundation.URLCredential) -> Self
+  public static func authorizationHeader(user: Swift.String, password: Swift.String) -> (key: Swift.String, value: Swift.String)?
+  open func resume()
+  open func suspend()
+  open func cancel()
+  @objc deinit
+}
+extension Request : Swift.CustomStringConvertible {
+  open var description: Swift.String {
+    get
+  }
+}
+extension Request : Swift.CustomDebugStringConvertible {
+  open var debugDescription: Swift.String {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers open class DataRequest : Request {
+  open var progress: Foundation.Progress {
+    get
+  }
+  @discardableResult
+  open func stream(closure: ((Foundation.Data) -> Swift.Void)? = nil) -> Self
+  @discardableResult
+  open func downloadProgress(queue: Dispatch.DispatchQueue = DispatchQueue.main, closure: @escaping DataRequest.ProgressHandler) -> Self
+  @discardableResult
+  open func downloadProgress(queue: Dispatch.DispatchQueue = DispatchQueue.main, closure: @escaping DataRequest.DownloadProgressHandler) -> Self
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers open class DownloadRequest : Request {
+  public struct DownloadOptions : Swift.OptionSet {
+    public let rawValue: Swift.UInt
+    public static let createIntermediateDirectories: DownloadRequest.DownloadOptions
+    public static let removePreviousFile: DownloadRequest.DownloadOptions
+    public init(rawValue: Swift.UInt)
+    public typealias Element = DownloadRequest.DownloadOptions
+    public typealias ArrayLiteralElement = DownloadRequest.DownloadOptions
+    public typealias RawValue = Swift.UInt
+  }
+  public typealias DownloadFileDestination = (Foundation.URL, Foundation.HTTPURLResponse) -> (destinationURL: Foundation.URL, options: DownloadRequest.DownloadOptions)
+  open var resumeData: Foundation.Data? {
+    get
+  }
+  open var progress: Foundation.Progress {
+    get
+  }
+  override open func cancel()
+  @discardableResult
+  open func downloadProgress(queue: Dispatch.DispatchQueue = DispatchQueue.main, closure: @escaping DownloadRequest.ProgressHandler) -> Self
+  @discardableResult
+  open func downloadProgress(queue: Dispatch.DispatchQueue = DispatchQueue.main, closure: @escaping DownloadRequest.DownloadProgressHandler) -> Self
+  open class func suggestedDownloadDestination(for directory: Foundation.FileManager.SearchPathDirectory = .documentDirectory, in domain: Foundation.FileManager.SearchPathDomainMask = .userDomainMask) -> DownloadRequest.DownloadFileDestination
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers open class UploadRequest : DataRequest {
+  open var uploadProgress: Foundation.Progress {
+    get
+  }
+  @discardableResult
+  open func uploadProgress(queue: Dispatch.DispatchQueue = DispatchQueue.main, closure: @escaping UploadRequest.ProgressHandler) -> Self
+  @discardableResult
+  open func uploadProgress(queue: Dispatch.DispatchQueue = DispatchQueue.main, closure: @escaping UploadRequest.UploadProgressHandler) -> Self
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers open class StreamRequest : Request {
+  @objc deinit
+}
+open class SessionManager {
+  public enum MultipartFormDataEncodingResult {
+    case success(request: UploadRequest, streamingFromDisk: Swift.Bool, streamFileURL: Foundation.URL?)
+    case failure(Swift.Error)
+  }
+  public static let `default`: SessionManager
+  public static let defaultHTTPHeaders: [Swift.String : Swift.String]
+  public static let multipartFormDataEncodingMemoryThreshold: Swift.UInt64
+  final public let session: Foundation.URLSession
+  final public let delegate: SessionDelegate
+  open var startRequestsImmediately: Swift.Bool
+  open var adapter: RequestAdapter?
+  open var retrier: RequestRetrier? {
+    get
+    set
+  }
+  open var backgroundCompletionHandler: (() -> Swift.Void)?
+  public init(configuration: Foundation.URLSessionConfiguration = URLSessionConfiguration.default, delegate: SessionDelegate = SessionDelegate(), serverTrustPolicyManager: ServerTrustPolicyManager? = nil)
+  public init?(session: Foundation.URLSession, delegate: SessionDelegate, serverTrustPolicyManager: ServerTrustPolicyManager? = nil)
+  @objc deinit
+  @discardableResult
+  open func request(_ urlString: URLStringConvertible, method: HTTPMethod = .get, parameters: Parameters? = nil, encoding: ParameterEncoding = URLEncoding.default, headers: [Swift.String : Swift.String]? = nil) -> DataRequest
+  open func request(resource urlRequest: URLRequestConvertible) -> DataRequest
+  @discardableResult
+  open func download(_ urlString: URLStringConvertible, method: HTTPMethod = .get, parameters: Parameters? = nil, encoding: ParameterEncoding = URLEncoding.default, headers: [Swift.String : Swift.String]? = nil, to destination: DownloadRequest.DownloadFileDestination? = nil) -> DownloadRequest
+  @discardableResult
+  open func download(resource urlRequest: URLRequestConvertible, to destination: DownloadRequest.DownloadFileDestination? = nil) -> DownloadRequest
+  @discardableResult
+  open func download(resourceWithin resumeData: Foundation.Data, to destination: DownloadRequest.DownloadFileDestination? = nil) -> DownloadRequest
+  @discardableResult
+  open func upload(_ fileURL: Foundation.URL, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil) -> UploadRequest
+  @discardableResult
+  open func upload(_ fileURL: Foundation.URL, with urlRequest: URLRequestConvertible) -> UploadRequest
+  @discardableResult
+  open func upload(_ data: Foundation.Data, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil) -> UploadRequest
+  @discardableResult
+  open func upload(_ data: Foundation.Data, with urlRequest: URLRequestConvertible) -> UploadRequest
+  @discardableResult
+  open func upload(_ stream: Foundation.InputStream, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil) -> UploadRequest
+  @discardableResult
+  open func upload(_ stream: Foundation.InputStream, with urlRequest: URLRequestConvertible) -> UploadRequest
+  open func upload(multipartFormData: @escaping (MultipartFormData) -> Swift.Void, usingThreshold encodingMemoryThreshold: Swift.UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Swift.Void)?)
+  open func upload(multipartFormData: @escaping (MultipartFormData) -> Swift.Void, usingThreshold encodingMemoryThreshold: Swift.UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, with urlRequest: URLRequestConvertible, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Swift.Void)?)
+  @discardableResult
+  open func stream(withHostName hostName: Swift.String, port: Swift.Int) -> StreamRequest
+  @discardableResult
+  open func stream(with netService: Foundation.NetService) -> StreamRequest
+}
+extension UIAlertController {
+  public func showPopUp()
+}
+public protocol URLStringConvertible {
+  var urlString: Swift.String { get }
+}
+extension String : URLStringConvertible {
+  public var urlString: Swift.String {
+    get
+  }
+}
+extension URL : URLStringConvertible {
+  public var urlString: Swift.String {
+    get
+  }
+}
+extension URLComponents : URLStringConvertible {
+  public var urlString: Swift.String {
+    get
+  }
+}
+extension URLRequest : URLStringConvertible {
+  public var urlString: Swift.String {
+    get
+  }
+}
+public protocol URLRequestConvertible {
+  var urlRequest: Foundation.URLRequest { get }
+}
+extension URLRequest : URLRequestConvertible {
+  public var urlRequest: Foundation.URLRequest {
+    get
+  }
+}
+extension URLRequest {
+  public init(urlString: URLStringConvertible, method: HTTPMethod, headers: [Swift.String : Swift.String]? = nil)
+}
+@discardableResult
+public func request(_ urlString: URLStringConvertible, method: HTTPMethod = .get, parameters: Parameters? = nil, encoding: ParameterEncoding = URLEncoding.default, headers: [Swift.String : Swift.String]? = nil) -> DataRequest
+@discardableResult
+public func request(resource urlRequest: URLRequestConvertible) -> DataRequest
+@discardableResult
+public func download(_ urlString: URLStringConvertible, method: HTTPMethod = .get, parameters: Parameters? = nil, encoding: ParameterEncoding = URLEncoding.default, headers: [Swift.String : Swift.String]? = nil, to destination: DownloadRequest.DownloadFileDestination? = nil) -> DownloadRequest
+@discardableResult
+public func download(resource urlRequest: URLRequestConvertible, to destination: DownloadRequest.DownloadFileDestination? = nil) -> DownloadRequest
+@discardableResult
+public func download(resourceWithin resumeData: Foundation.Data, to destination: DownloadRequest.DownloadFileDestination? = nil) -> DownloadRequest
+@discardableResult
+public func upload(_ fileURL: Foundation.URL, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil) -> UploadRequest
+@discardableResult
+public func upload(_ fileURL: Foundation.URL, with urlRequest: URLRequestConvertible) -> UploadRequest
+@discardableResult
+public func upload(_ data: Foundation.Data, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil) -> UploadRequest
+@discardableResult
+public func upload(_ data: Foundation.Data, with urlRequest: URLRequestConvertible) -> UploadRequest
+@discardableResult
+public func upload(_ stream: Foundation.InputStream, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil) -> UploadRequest
+@discardableResult
+public func upload(_ stream: Foundation.InputStream, with urlRequest: URLRequestConvertible) -> UploadRequest
+public func upload(multipartFormData: @escaping (MultipartFormData) -> Swift.Void, usingThreshold encodingMemoryThreshold: Swift.UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, to urlString: URLStringConvertible, method: HTTPMethod = .post, headers: [Swift.String : Swift.String]? = nil, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Swift.Void)?)
+public func upload(multipartFormData: @escaping (MultipartFormData) -> Swift.Void, usingThreshold encodingMemoryThreshold: Swift.UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, with urlRequest: URLRequestConvertible, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Swift.Void)?)
+@discardableResult
+public func stream(withHostName hostName: Swift.String, port: Swift.Int) -> StreamRequest
+@discardableResult
+public func stream(with netService: Foundation.NetService) -> StreamRequest
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class CustomEndpoint : ObjectiveC.NSObject {
+  @objc open var url: Swift.String? {
+    @objc get
+  }
+  @objc open var headers: [Swift.String : Swift.String]? {
+    @objc get
+  }
+  @objc open var queryStringParameters: [Swift.String : Swift.String]? {
+    @objc get
+  }
+  @objc open var customData: [Swift.String : Swift.AnyObject]? {
+    @objc get
+  }
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class CustomEndpointBuilder : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc public init(customEndpoint: CustomEndpoint)
+  @objc open func setUrl(url: Swift.String) throws -> CustomEndpointBuilder
+  @objc open func setHeader(key: Swift.String, value: Swift.String) -> CustomEndpointBuilder
+  @objc open func removeHeader(key: Swift.String) -> CustomEndpointBuilder
+  @objc open func setHeaders(headers: [Swift.String : Swift.String]) -> CustomEndpointBuilder
+  @objc open func removeAllHeaders() -> CustomEndpointBuilder
+  @objc open func setQueryStringParameter(key: Swift.String, value: Swift.String) -> CustomEndpointBuilder
+  @objc open func setQueryStringParameters(parameters: [Swift.String : Swift.String]) -> CustomEndpointBuilder
+  @objc open func removeQueryStringParameter(key: Swift.String) -> CustomEndpointBuilder
+  @objc open func removeAllQueryStringParameters() -> CustomEndpointBuilder
+  @objc open func setCustomData(data: [Swift.String : Swift.AnyObject]) throws -> CustomEndpointBuilder
+  @objc open func removeCustomData() -> CustomEndpointBuilder
+  @objc open func setEnabled(enabled: Swift.Bool) -> CustomEndpointBuilder
+  @objc open func build() throws -> CustomEndpoint
+  @objc deinit
+}
+@objc public enum CustomEndpointException : Swift.Int, Swift.Error {
+  case InvalidUrlException
+  case NoUrlDefinedException
+  case InvalidJSONObject
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+  public static var _nsErrorDomain: Swift.String {
+    get
+  }
+}
+@objc public protocol GUPositionReceiver {
+  @objc init()
+  @objc func onPositionListened(_ location: CoreLocation.CLLocation)
+  @objc func onError(_ error: Swift.Error)
+}
+@objc public protocol GURealTimeReceiver {
+  @objc init()
+  @objc func onPositionListened(_ location: CoreLocation.CLLocation)
+  @objc func onError(_ guError: GUError, error: Swift.Error?)
+}
+public typealias isGranted = ((Swift.Bool) -> ())
+open class MultipartFormData {
+  open var contentType: Swift.String {
+    get
+  }
+  public var contentLength: Swift.UInt64 {
+    get
+  }
+  final public let boundary: Swift.String
+  public init()
+  public func append(_ data: Foundation.Data, withName name: Swift.String)
+  public func append(_ data: Foundation.Data, withName name: Swift.String, mimeType: Swift.String)
+  public func append(_ data: Foundation.Data, withName name: Swift.String, fileName: Swift.String, mimeType: Swift.String)
+  public func append(_ fileURL: Foundation.URL, withName name: Swift.String)
+  public func append(_ fileURL: Foundation.URL, withName name: Swift.String, fileName: Swift.String, mimeType: Swift.String)
+  public func append(_ stream: Foundation.InputStream, withLength length: Swift.UInt64, name: Swift.String, fileName: Swift.String, mimeType: Swift.String)
+  public func append(_ stream: Foundation.InputStream, withLength length: Swift.UInt64, headers: [Swift.String : Swift.String])
+  public func encode() throws -> Foundation.Data
+  public func writeEncodedData(to fileURL: Foundation.URL) throws
+  @objc deinit
+}
+extension Request {
+  public enum ValidationResult {
+    case success
+    case failure(Swift.Error)
+  }
+}
+extension DataRequest {
+  public typealias Validation = (Foundation.URLRequest?, Foundation.HTTPURLResponse, Foundation.Data?) -> Request.ValidationResult
+  @discardableResult
+  public func validate(_ validation: @escaping DataRequest.Validation) -> Self
+  @discardableResult
+  public func validate<S>(statusCode acceptableStatusCodes: S) -> Self where S : Swift.Sequence, S.Element == Swift.Int
+  @discardableResult
+  public func validate<S>(contentType acceptableContentTypes: S) -> Self where S : Swift.Sequence, S.Element == Swift.String
+  @discardableResult
+  public func validate() -> Self
+}
+extension DownloadRequest {
+  public typealias Validation = (Foundation.URLRequest?, Foundation.HTTPURLResponse, Foundation.URL?, Foundation.URL?) -> Request.ValidationResult
+  @discardableResult
+  public func validate(_ validation: @escaping DownloadRequest.Validation) -> Self
+  @discardableResult
+  public func validate<S>(statusCode acceptableStatusCodes: S) -> Self where S : Swift.Sequence, S.Element == Swift.Int
+  @discardableResult
+  public func validate<S>(contentType acceptableContentTypes: S) -> Self where S : Swift.Sequence, S.Element == Swift.String
+  @discardableResult
+  public func validate() -> Self
+}
+@_hasMissingDesignatedInitializers open class KeychainWrapper {
+  open class var serviceName: Swift.String {
+    get
+    set(newServiceName)
+  }
+  open class var accessGroup: Swift.String {
+    get
+    set(newAccessGroup)
+  }
+  open class func hasValueForKey(_ keyName: Swift.String) -> Swift.Bool
+  open class func stringForKey(_ keyName: Swift.String) -> Swift.String?
+  open class func objectForKey(_ keyName: Swift.String) -> Foundation.NSCoding?
+  open class func dataForKey(_ keyName: Swift.String) -> Foundation.Data?
+  open class func setString(_ value: Swift.String, forKey keyName: Swift.String) -> Swift.Bool
+  open class func setObject(_ value: Foundation.NSCoding, forKey keyName: Swift.String) -> Swift.Bool
+  open class func setData(_ value: Foundation.Data, forKey keyName: Swift.String) -> Swift.Bool
+  open class func removeObjectForKey(_ keyName: Swift.String) -> Swift.Bool
+  @objc deinit
+}
+@objc open class GUGeoPoint : ObjectiveC.NSObject {
+  @objc open var latitude: Swift.Double
+  @objc open var longitude: Swift.Double
+  @objc public init(latitude: Swift.Double, longitude: Swift.Double)
+  @objc override dynamic open var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public init()
+}
+extension GUGeoPoint : Foundation.NSCopying {
+  @objc dynamic public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+}
+@objc open class GUCircularArea : ObjectiveC.NSObject, Foundation.NSCopying {
+  @objc open var center: GUGeoPoint
+  @objc open var radius: Swift.Double
+  @objc open var name: Swift.String?
+  @objc open var areaDescription: Swift.String?
+  @objc public init(center: GUGeoPoint, radius: Swift.Double, name: Swift.String?, areaDescription: Swift.String?)
+  @objc public init(latitude: Swift.Double, longitude: Swift.Double, radius: Swift.Double, name: Swift.String?, areaDescription: Swift.String?)
+  @objc public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc override dynamic open var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public init()
+}
+@objc public protocol GUOnlineStreaming : GUPositionReceiver {
+  @objc func getIdentifier() -> Swift.String
+}
+public protocol PersistenceProtocol {
+  associatedtype returnType
+  func storeWithKey(persistenceManager: PersistenceManagerAPI, key: Swift.String)
+  static func removeWithKey(persistenceManager: PersistenceManagerAPI, key: Swift.String) -> Swift.Bool
+  static func readWithKey(persistenceManager: PersistenceManagerAPI, key: Swift.String) -> Self.returnType?
+}
+public typealias JSON = [Swift.String : Swift.AnyObject]
+public protocol JsonParserProtocol {
+  associatedtype DecodableType
+  static func decodeJsonObject(json: JSON) -> Self.DecodableType?
+  static func decodeJsonObject(json: JSON?) -> Self.DecodableType?
+  static func decodeJsonObject(json: [JSON]) -> [Self.DecodableType?]
+  static func decodeJsonObject(json: [JSON]?) -> [Self.DecodableType?]
+  func encodeJsonObject() -> JSON?
+  func serializationToJsonString() -> Swift.String?
+  static func deserializationJsonString(jsonString: Swift.String) -> Self.DecodableType?
+}
+extension JsonParserProtocol {
+  public static func decodeJsonObject(json: JSON?) -> Self.DecodableType?
+  public static func decodeJsonObject(json: [JSON]) -> [Self.DecodableType?]
+  public static func decodeJsonObject(json: [JSON]?) -> [Self.DecodableType?]
+  public func serializationToJsonString() -> Swift.String?
+  public static func deserializationJsonString(jsonString: Swift.String) -> Self.DecodableType?
+}
+@objc public enum GUMotionType : Swift.Int, Swift.CustomStringConvertible {
+  case still
+  case walking
+  case running
+  case cycling
+  case automotive
+  case unknown
+  public static func allValues() -> [GUMotionType]
+  public func getDescription() -> Swift.String
+  public var description: Swift.String {
+    get
+  }
+  public static func == (lhs: GUMotionType, rhs: GUMotionType) -> Swift.Bool
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers open class SessionDelegate : ObjectiveC.NSObject {
+  open var sessionDidBecomeInvalidWithError: ((Foundation.URLSession, Swift.Error?) -> Swift.Void)?
+  open var sessionDidReceiveChallenge: ((Foundation.URLSession, Foundation.URLAuthenticationChallenge) -> (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?))?
+  open var sessionDidReceiveChallengeWithCompletion: ((Foundation.URLSession, Foundation.URLAuthenticationChallenge, (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?) -> Swift.Void) -> Swift.Void)?
+  open var sessionDidFinishEventsForBackgroundURLSession: ((Foundation.URLSession) -> Swift.Void)?
+  open var taskWillPerformHTTPRedirection: ((Foundation.URLSession, Foundation.URLSessionTask, Foundation.HTTPURLResponse, Foundation.URLRequest) -> Foundation.URLRequest?)?
+  open var taskWillPerformHTTPRedirectionWithCompletion: ((Foundation.URLSession, Foundation.URLSessionTask, Foundation.HTTPURLResponse, Foundation.URLRequest, (Foundation.URLRequest?) -> Swift.Void) -> Swift.Void)?
+  open var taskDidReceiveChallenge: ((Foundation.URLSession, Foundation.URLSessionTask, Foundation.URLAuthenticationChallenge) -> (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?))?
+  open var taskDidReceiveChallengeWithCompletion: ((Foundation.URLSession, Foundation.URLSessionTask, Foundation.URLAuthenticationChallenge, (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?) -> Swift.Void) -> Swift.Void)?
+  open var taskNeedNewBodyStream: ((Foundation.URLSession, Foundation.URLSessionTask) -> Foundation.InputStream?)?
+  open var taskNeedNewBodyStreamWithCompletion: ((Foundation.URLSession, Foundation.URLSessionTask, (Foundation.InputStream?) -> Swift.Void) -> Swift.Void)?
+  open var taskDidSendBodyData: ((Foundation.URLSession, Foundation.URLSessionTask, Swift.Int64, Swift.Int64, Swift.Int64) -> Swift.Void)?
+  open var taskDidComplete: ((Foundation.URLSession, Foundation.URLSessionTask, Swift.Error?) -> Swift.Void)?
+  open var dataTaskDidReceiveResponse: ((Foundation.URLSession, Foundation.URLSessionDataTask, Foundation.URLResponse) -> Foundation.URLSession.ResponseDisposition)?
+  open var dataTaskDidReceiveResponseWithCompletion: ((Foundation.URLSession, Foundation.URLSessionDataTask, Foundation.URLResponse, (Foundation.URLSession.ResponseDisposition) -> Swift.Void) -> Swift.Void)?
+  open var dataTaskDidBecomeDownloadTask: ((Foundation.URLSession, Foundation.URLSessionDataTask, Foundation.URLSessionDownloadTask) -> Swift.Void)?
+  open var dataTaskDidReceiveData: ((Foundation.URLSession, Foundation.URLSessionDataTask, Foundation.Data) -> Swift.Void)?
+  open var dataTaskWillCacheResponse: ((Foundation.URLSession, Foundation.URLSessionDataTask, Foundation.CachedURLResponse) -> Foundation.CachedURLResponse?)?
+  open var dataTaskWillCacheResponseWithCompletion: ((Foundation.URLSession, Foundation.URLSessionDataTask, Foundation.CachedURLResponse, (Foundation.CachedURLResponse?) -> Swift.Void) -> Swift.Void)?
+  open var downloadTaskDidFinishDownloadingToURL: ((Foundation.URLSession, Foundation.URLSessionDownloadTask, Foundation.URL) -> Swift.Void)?
+  open var downloadTaskDidWriteData: ((Foundation.URLSession, Foundation.URLSessionDownloadTask, Swift.Int64, Swift.Int64, Swift.Int64) -> Swift.Void)?
+  open var downloadTaskDidResumeAtOffset: ((Foundation.URLSession, Foundation.URLSessionDownloadTask, Swift.Int64, Swift.Int64) -> Swift.Void)?
+  open var streamTaskReadClosed: ((Foundation.URLSession, Foundation.URLSessionStreamTask) -> Swift.Void)?
+  open var streamTaskWriteClosed: ((Foundation.URLSession, Foundation.URLSessionStreamTask) -> Swift.Void)?
+  open var streamTaskBetterRouteDiscovered: ((Foundation.URLSession, Foundation.URLSessionStreamTask) -> Swift.Void)?
+  open var streamTaskDidBecomeInputAndOutputStreams: ((Foundation.URLSession, Foundation.URLSessionStreamTask, Foundation.InputStream, Foundation.OutputStream) -> Swift.Void)?
+  open subscript(task: Foundation.URLSessionTask) -> Request? {
+    get
+    set
+  }
+  @objc override dynamic public init()
+  @objc override dynamic open func responds(to selector: ObjectiveC.Selector) -> Swift.Bool
+  @objc deinit
+}
+extension SessionDelegate : Foundation.URLSessionDelegate {
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, didBecomeInvalidWithError error: Swift.Error?)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, didReceive challenge: Foundation.URLAuthenticationChallenge, completionHandler: @escaping (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?) -> Swift.Void)
+  @objc dynamic open func urlSessionDidFinishEvents(forBackgroundURLSession session: Foundation.URLSession)
+}
+extension SessionDelegate : Foundation.URLSessionTaskDelegate {
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, task: Foundation.URLSessionTask, willPerformHTTPRedirection response: Foundation.HTTPURLResponse, newRequest request: Foundation.URLRequest, completionHandler: @escaping (Foundation.URLRequest?) -> Swift.Void)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, task: Foundation.URLSessionTask, didReceive challenge: Foundation.URLAuthenticationChallenge, completionHandler: @escaping (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?) -> Swift.Void)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, task: Foundation.URLSessionTask, needNewBodyStream completionHandler: @escaping (Foundation.InputStream?) -> Swift.Void)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, task: Foundation.URLSessionTask, didSendBodyData bytesSent: Swift.Int64, totalBytesSent: Swift.Int64, totalBytesExpectedToSend: Swift.Int64)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, task: Foundation.URLSessionTask, didCompleteWithError error: Swift.Error?)
+}
+extension SessionDelegate : Foundation.URLSessionDataDelegate {
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, dataTask: Foundation.URLSessionDataTask, didReceive response: Foundation.URLResponse, completionHandler: @escaping (Foundation.URLSession.ResponseDisposition) -> Swift.Void)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, dataTask: Foundation.URLSessionDataTask, didBecome downloadTask: Foundation.URLSessionDownloadTask)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, dataTask: Foundation.URLSessionDataTask, didReceive data: Foundation.Data)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, dataTask: Foundation.URLSessionDataTask, willCacheResponse proposedResponse: Foundation.CachedURLResponse, completionHandler: @escaping (Foundation.CachedURLResponse?) -> Swift.Void)
+}
+extension SessionDelegate : Foundation.URLSessionDownloadDelegate {
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, downloadTask: Foundation.URLSessionDownloadTask, didFinishDownloadingTo location: Foundation.URL)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, downloadTask: Foundation.URLSessionDownloadTask, didWriteData bytesWritten: Swift.Int64, totalBytesWritten: Swift.Int64, totalBytesExpectedToWrite: Swift.Int64)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, downloadTask: Foundation.URLSessionDownloadTask, didResumeAtOffset fileOffset: Swift.Int64, expectedTotalBytes: Swift.Int64)
+}
+extension SessionDelegate : Foundation.URLSessionStreamDelegate {
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, readClosedFor streamTask: Foundation.URLSessionStreamTask)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, writeClosedFor streamTask: Foundation.URLSessionStreamTask)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, betterRouteDiscoveredFor streamTask: Foundation.URLSessionStreamTask)
+  @objc dynamic open func urlSession(_ session: Foundation.URLSession, streamTask: Foundation.URLSessionStreamTask, didBecome inputStream: Foundation.InputStream, outputStream: Foundation.OutputStream)
+}
+extension NetworkReachabilityManager.ConnectionType : Swift.Equatable {}
+extension NetworkReachabilityManager.ConnectionType : Swift.Hashable {}
+extension GUSort : Swift.Equatable {}
+extension GUSort : Swift.Hashable {}
+extension GUSort : Swift.RawRepresentable {}
+extension HTTPMethod : Swift.Equatable {}
+extension HTTPMethod : Swift.Hashable {}
+extension HTTPMethod : Swift.RawRepresentable {}
+extension URLEncoding.Destination : Swift.Equatable {}
+extension URLEncoding.Destination : Swift.Hashable {}
+extension GUGeofence.Status : Swift.Equatable {}
+extension GUGeofence.Status : Swift.Hashable {}
+extension GUGeofence.Status : Swift.RawRepresentable {}
+extension ConsentItem : Swift.Equatable {}
+extension ConsentItem : Swift.Hashable {}
+extension ConsentItem : Swift.RawRepresentable {}
+extension GUError : Swift.Equatable {}
+extension GUError : Swift.Hashable {}
+extension GUError : Swift.RawRepresentable {}
+extension CustomEndpointException : Swift.Equatable {}
+extension CustomEndpointException : Swift.Hashable {}
+extension CustomEndpointException : Swift.RawRepresentable {}
+extension GUMotionType : Swift.Equatable {}
+extension GUMotionType : Swift.Hashable {}
+extension GUMotionType : Swift.RawRepresentable {}

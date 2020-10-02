@@ -11,8 +11,9 @@ s.platform     = :ios
 s.ios.deployment_target = '10.0'
 
 # the Pre-Compiled Framework:
-s.source          = { :http => "https://github.com/geouniq/GeoUniqSDK-FAT-Cocoapods/blob/main/GeoUniqSDK-FAT-Cocoapods-#{s.version}.zip" }
-s.vendored_frameworks = "GeoUniqSDK-FAT-Cocoapods-#{s.version}/GeoUniq.framework"
+s.source          = { :git => "https://github.com/geouniq/GeoUniqSDK-FAT-Cocoapods.git", :tag => s.version.to_s }
+
+s.ios.vendored_frameworks = 'GeoUniq.framework'
 s.swift_version = "5.0"
 s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.0' }
 s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
